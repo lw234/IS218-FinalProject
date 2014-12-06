@@ -2,7 +2,7 @@
 ini_set('display_errors', 'On');
 error_reporting(E_ALL | E_STRICT);
 $csv = new CSVLoader();
-$data = $csv->openFile('CollegeData/college.csv');
+$data = $csv->openFile('CollegeData/finance.csv');
 $csv->writeToDatabase($data);
 
 class CSVLoader{
@@ -39,10 +39,10 @@ class CSVLoader{
 	
 	public function writeToDatabase($records){
 		$host = "sql1.njit.edu";
-		$dbname = "";
-		$table = "colleges";
+		$dbname = "ia85";
+		$table = "Finance";
 		try{
-		$DBH = new PDO("mysql:host=$host;dbname=$dbname","","");
+		$DBH = new PDO("mysql:host=$host;dbname=$dbname","ia85","carport85");
 		$DBH->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		
 		//Let's write to the database
@@ -54,7 +54,7 @@ class CSVLoader{
 			
 			print_r($insert);
 			
-			$STH = $DBH->prepare("insert into $table values(?,?,?)");
+			$STH = $DBH->prepare("insert into $table values(?,?,?,?,?,?,?)");
 			$STH->execute($insert);	
 		}
 		
