@@ -68,7 +68,7 @@ class homepage extends page{
 		<a href = "http://web.njit.edu/~lw234/IS218/FinalProject/Index.php?page=Enrollment"> Colleges with the highest enrollments in 2011</a><br>
 		<a href = "http://web.njit.edu/~lw234/IS218/FinalProject/Index.php?page=TLiabilities">Colleges with the highest total liabilities in 2011</a><br>
 		<a href = "http://web.njit.edu/~lw234/IS218/FinalProject/Index.php?page=NAssets">Colleges with the highest net assets in 2011</a><br>
-		<a href = "http://web.njit.edu/~lw234/IS218/FinalProject/Index.php?page=NAPS"> Colleges with the highest net assets per student</a><br>
+		<a href = "http://web.njit.edu/~lw234/IS218/FinalProject/Index.php?page=NAPS"> Colleges with the highest net assets per student in 2011</a><br>
 		<a href = "http://web.njit.edu/~lw234/IS218/FinalProject/Index.php?page=LIE">Colleges with the largest increase in enrollment between 2011 and 2010</a><br>
 		
 		';
@@ -197,6 +197,104 @@ class NAssets extends page{
 			$this->content .= "<tr>";
 			$this->content .= "<td>" . $rows['Name'] . "</td>";
 			$this->content .= "<td>" . $rows['N2011'] . "</td>";
+			$this->content .= "</tr>";
+		}
+		
+		$this->content .= "</table>";
+		
+		$DBH = null;
+		}
+		catch(PDOException $e){
+			echo $e->getMessage();
+		}
+		
+	}
+}
+
+/* QUESTION NUMBER 4: Create a web page that lists the colleges with the largest amount of net assets per student.
+
+ */
+
+class NAPS extends page{
+	
+	function get(){
+		
+		$host = "sql2.njit.edu";
+		$dbname = "lw234";
+		$user ="lw234";
+		$pass = 'QkuxTlWHS';
+		try{
+		$DBH = new PDO("mysql:host=$host;dbname=$dbname", $user, $pass);
+		$DBH->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		
+		$STH = $DBH->query("SELECT college.Name, Finance.N2011, enrollment.EN2011, round(Finance.N2011/enrollment.En2011,0) AS AssetPerS FROM college INNER JOIN Finance ON Finance.UID = college.UID INNER JOIN enrollment ON college.UID = enrollment.UID ORDER BY AssetPerS DESC ");
+		
+		$this->content .= "<h1>Colleges with the highest net assets per student in 2011</h1><br>"; 
+		
+		
+		$this->content .= "<table border = 2>";
+		$this->content .= "
+			<tr>
+				<th>College Name</th>
+				<th>Total net assests per student</th>
+			</tr>
+		";
+		
+		while($rows = $STH->fetch()){
+			$this->content .= "<tr>";
+			$this->content .= "<td>" . $rows['Name'] . "</td>";
+			$this->content .= "<td>" . $rows['AssetPerS'] . "</td>";
+			$this->content .= "</tr>";
+		}
+		
+		$this->content .= "</table>";
+		
+		$DBH = null;
+		}
+		catch(PDOException $e){
+			echo $e->getMessage();
+		}
+		
+	}
+}
+
+/* QUESTION NUMBER 5: Create a web page that shows the colleges with the largest percentage increase in enrollment between the years of 2011 and 2010.
+
+ */
+
+class LIE extends page{
+	
+	function get(){
+		
+		$host = "sql2.njit.edu";
+		$dbname = "lw234";
+		$user ="lw234";
+		$pass = 'QkuxTlWHS';
+		try{
+		$DBH = new PDO("mysql:host=$host;dbname=$dbname", $user, $pass);
+		$DBH->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		
+		$STH = $DBH->query("SELECT college.Name,enrollment.EN2010,enrollment.EN2011,Format(round((enrollment.EN2011-enrollment.EN2010)*100/enrollment.EN2010,1),#,0) AS PIncrease FROM college INNER JOIN enrollment ON enrollment.UID = college.UID ORDER BY PIncrease DESC ");
+		
+		$this->content .= "<h1>Colleges with the largest percentage increase in enrollment between the years of 2011 and 2010</h1><br>"; 
+		
+		
+		$this->content .= "<table border = 2>";
+		$this->content .= "
+			<tr>
+				<th>College Name</th>
+				<th>Number of students 2010</th>
+				<th>Number of students 2011</th>
+				<th>Percent Increase</th>
+			</tr>
+		";
+		
+		while($rows = $STH->fetch()){
+			$this->content .= "<tr>";
+			$this->content .= "<td>" . $rows['Name'] . "</td>";
+			$this->content .= "<td>" . $rows['EN2010'] . "</td>";
+			$this->content .= "<td>" . $rows['EN2011'] . "</td>";
+			$this->content .= "<td>" . $rows['PIncrease'] . "</td>";
 			$this->content .= "</tr>";
 		}
 		
